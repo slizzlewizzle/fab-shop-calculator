@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steel Weight and Quote Calculator - Parlor City Digital</title>
+<meta name="description" content="Free steel weight calculator and fabrication quote calculator for small fab shops. Plate, bar, tube and angle weights plus a complete job quote in seconds.">
+<style>
+  :root{
+    --ink:#1c232b;
+    --steel:#2e3a46;
+    --steel-dark:#1a2129;
+    --accent:#e86a17;
+    --accent-dark:#c8550d;
+    --bg:#f2f3f5;
+    --card:#ffffff;
+    --line:#d7dce1;
+    --muted:#5a6672;
+    --ok:#14532d;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  header{
+    background:var(--steel-dark);
+    color:#fff;
+    border-bottom:5px solid var(--accent);
+    padding:28px 16px 24px;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px;}
+  header .wrap{padding:0;}
+  .brand{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f0a56b;font-weight:bold;margin:0 0 6px;}
+  h1{margin:0 0 8px;font-size:32px;line-height:1.15;}
+  header p{margin:0;color:#cbd3da;max-width:640px;font-size:16px;}
+  main{padding:24px 0 8px;}
+  section.card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-top:4px solid var(--steel);
+    border-radius:6px;
+    padding:22px;
+    margin-bottom:22px;
+  }
+  h2{margin:0 0 6px;font-size:22px;color:var(--steel-dark);}
+  h3{margin:20px 0 8px;font-size:16px;color:var(--steel-dark);}
+  .sub{margin:0 0 16px;color:var(--muted);font-size:15px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 18px;}
+  .field label{display:block;font-weight:bold;font-size:14px;margin-bottom:5px;}
+  .field input,.field select{
+    width:100%;
+    padding:10px 11px;
+    font-size:16px;
+    border:1px solid #aeb7bf;
+    border-radius:4px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field input:focus,.field select:focus{outline:3px solid #f6c391;outline-offset:1px;border-color:var(--accent-dark);}
+  .hint{font-size:13px;color:var(--muted);margin-top:4px;}
+  .shape-fields{display:none;}
+  .shape-fields.active{display:grid;}
+  .results{
+    margin-top:18px;
+    background:#f6f7f8;
+    border:1px solid var(--line);
+    border-left:5px solid var(--accent);
+    border-radius:4px;
+    padding:14px 16px;
+  }
+  .results dl{margin:0;display:grid;grid-template-columns:1fr auto;row-gap:7px;column-gap:16px;}
+  .results dt{font-size:15px;}
+  .results dd{margin:0;font-weight:bold;font-size:15px;text-align:right;font-variant-numeric:tabular-nums;}
+  .results .grand{border-top:2px solid var(--steel);padding-top:9px;margin-top:4px;font-size:18px;}
+  .results .grand dt,.results .grand dd{font-size:18px;}
+  .btn{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    border:0;
+    border-radius:4px;
+    padding:13px 22px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:none;
+    text-align:center;
+  }
+  .btn:hover,.btn:focus{background:var(--accent-dark);}
+  .btn-secondary{background:var(--steel);}
+  .btn-secondary:hover,.btn-secondary:focus{background:var(--steel-dark);}
+  .cta{
+    background:var(--steel-dark);
+    color:#fff;
+    border-radius:6px;
+    padding:26px 22px;
+    margin-bottom:22px;
+    border-top:5px solid var(--accent);
+  }
+  .cta h2{color:#fff;}
+  .cta p{color:#d6dde3;max-width:680px;}
+  .cta ul{color:#eef1f3;padding-left:20px;columns:2;column-gap:32px;margin:12px 0 18px;}
+  .cta li{margin-bottom:6px;break-inside:avoid;}
+  .price{font-size:30px;font-weight:bold;color:#f0a56b;}
+  footer{
+    background:var(--steel-dark);
+    color:#cbd3da;
+    padding:20px 16px;
+    text-align:center;
+    font-size:14px;
+    margin-top:10px;
+  }
+  footer strong{color:#fff;}
+  .note{font-size:13px;color:var(--muted);margin-top:12px;}
+  @media (max-width:640px){
+    h1{font-size:26px;}
+    .grid,.grid3{grid-template-columns:1fr;}
+    .cta ul{columns:1;}
+    section.card{padding:17px;}
+    .btn{width:100%;}
+  }
+  @media print{
+    body{background:#fff;}
+    header, .no-print, #weightSection, #ctaSection, footer, .btn{display:none !important;}
+    section.card{border:none;padding:0;margin:0;}
+    #quoteSection{border:none;}
+    #quoteSection .quote-inputs, #quoteSection .sub, #quoteSection h2{display:none !important;}
+    #printSummary{display:block !important;}
+    .results{background:#fff;border:1px solid #999;border-left:5px solid #333;}
+  }
+  #printSummary h2{display:block !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="brand">Parlor City Digital</p>
+    <h1>Steel Weight and Quote Calculator</h1>
+    <p>Figure steel weight by shape, then turn it into a complete job quote - material, markup, labor, tax and deposit - in under a minute. Free, no sign-up, nothing leaves your browser.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- ============ WEIGHT CALCULATOR ============ -->
+    <section class="card" id="weightSection" aria-labelledby="weightHeading">
+      <h2 id="weightHeading">1. Steel Weight Calculator</h2>
+      <p class="sub">Carbon steel at 0.2833 lb per cubic inch (7850 kg per cubic meter). Pick a shape, enter dimensions, and set the quantity.</p>
+
+      <div class="grid">
+        <div class="field">
+          <label for="shape">Shape</label>
+          <select id="shape">
+            <option value="plate" selected>Plate / Sheet</option>
+            <option value="flat">Flat Bar</option>
+            <option value="round">Round Bar</option>
+            <option value="square">Square Bar</option>
+            <option value="tube">Round Tube</option>
+            <option value="angle">Angle (approx.)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="unit">Units</label>
+          <select id="unit">
+            <option value="in" selected>Inches</option>
+            <option value="mm">Millimeters</option>
+          </select>
+          <p class="hint">Weights are always shown in pounds (lb).</p>
+        </div>
+      </div>
+
+      <!-- Plate / Sheet -->
+      <div class="grid3 shape-fields active" id="fields-plate" style="margin-top:14px;">
+        <div class="field">
+          <label for="plate-t">Thickness (<span class="unit-label">in</span>)</label>
+          <input type="number" id="plate-t" value="0.25" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="plate-w">Width (<span class="unit-label">in</span>)</label>
+          <input type="number" id="plate-w" value="12" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="plate-l">Length (<span class="unit-label">in</span>)</label>
+          <input type="number" id="plate-l" value="24" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- Flat Bar -->
+      <div class="grid3 shape-fields" id="fields-flat" style="margin-top:14px;">
+        <div class="field">
+          <label for="flat-t">Thickness (<span class="unit-label">in</span>)</label>
+          <input type="number" id="flat-t" value="0.25" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="flat-w">Width (<span class="unit-label">in</span>)</label>
+          <input type="number" id="flat-w" value="2" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="flat-l">Length (<span class="unit-label">in</span>)</label>
+          <input type="number" id="flat-l" value="36" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- Round Bar -->
+      <div class="grid shape-fields" id="fields-round" style="margin-top:14px;">
+        <div class="field">
+          <label for="round-d">Diameter (<span class="unit-label">in</span>)</label>
+          <input type="number" id="round-d" value="1" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="round-l">Length (<span class="unit-label">in</span>)</label>
+          <input type="number" id="round-l" value="12" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- Square Bar -->
+      <div class="grid shape-fields" id="fields-square" style="margin-top:14px;">
+        <div class="field">
+          <label for="square-s">Side (<span class="unit-label">in</span>)</label>
+          <input type="number" id="square-s" value="1" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="square-l">Length (<span class="unit-label">in</span>)</label>
+          <input type="number" id="square-l" value="12" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- Round Tube -->
+      <div class="grid3 shape-fields" id="fields-tube" style="margin-top:14px;">
+        <div class="field">
+          <label for="tube-od">Outside Diameter (<span class="unit-label">in</span>)</label>
+          <input type="number" id="tube-od" value="2" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="tube-wall">Wall Thickness (<span class="unit-label">in</span>)</label>
+          <input type="number" id="tube-wall" value="0.125" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="tube-l">Length (<span class="unit-label">in</span>)</label>
+          <input type="number" id="tube-l" value="36" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- Angle -->
+      <div class="grid3 shape-fields" id="fields-angle" style="margin-top:14px;">
+        <div class="field">
+          <label for="angle-a">Leg A (<span class="unit-label">in</span>)</label>
+          <input type="number" id="angle-a" value="2" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="angle-b">Leg B (<span class="unit-label">in</span>)</label>
+          <input type="number" id="angle-b" value="2" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="angle-t">Thickness (<span class="unit-label">in</span>)</label>
+          <input type="number" id="angle-t" value="0.25" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="angle-l">Length (<span class="unit-label">in</span>)</label>
+          <input type="number" id="angle-l" value="36" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="field">
+          <label for="qty">Quantity (pieces)</label>
+          <input type="number" id="qty" value="1" min="0" step="1" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="results" aria-live="polite">
+        <dl>
+          <dt>Weight per piece</dt>
+          <dd id="weightPerPiece">0.00 lb</dd>
+          <dt>Total weight</dt>
+          <dd id="weightTotal">0.00 lb</dd>
+        </dl>
+      </div>
+      <p class="note">Angle weight uses the standard approximation: thickness x (Leg A + Leg B - thickness) x length. Tube weight uses outside diameter minus two wall thicknesses for the inside diameter. Actual weights vary with mill tolerance.</p>
+    </section>
+
+    <!-- ============ QUOTE CALCULATOR ============ -->
+    <section class="card" id="quoteSection" aria-labelledby="quoteHeading">
+      <h2 id="quoteHeading">2. Quote Calculator</h2>
+      <p class="sub">Total weight flows in from the calculator above. Edit any number - the quote updates as you type.</p>
+
+      <div class="quote-inputs">
+        <div class="grid">
+          <div class="field">
+            <label for="q-weight">Material weight (lb)</label>
+            <input type="number" id="q-weight" value="0" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-costlb">Material cost ($ per lb)</label>
+            <input type="number" id="q-costlb" value="0.85" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-markup">Material markup (%)</label>
+            <input type="number" id="q-markup" value="25" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-hours">Labor hours</label>
+            <input type="number" id="q-hours" value="2" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-rate">Shop labor rate ($ per hr)</label>
+            <input type="number" id="q-rate" value="75" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-consumables">Consumables ($)</label>
+            <input type="number" id="q-consumables" value="15" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-other">Other costs ($)</label>
+            <input type="number" id="q-other" value="0" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-tax">Tax (%)</label>
+            <input type="number" id="q-tax" value="0" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="q-deposit">Deposit (%)</label>
+            <input type="number" id="q-deposit" value="50" min="0" step="any" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+
+      <div class="results" id="printSummary">
+        <h2 style="font-size:19px;margin-bottom:10px;">Quote Summary</h2>
+        <dl>
+          <dt>Material weight</dt>
+          <dd id="out-weight">0.00 lb</dd>
+          <dt>Material cost (before markup)</dt>
+          <dd id="out-matcost">$0.00</dd>
+          <dt>Material (with markup)</dt>
+          <dd id="out-material">$0.00</dd>
+          <dt>Labor</dt>
+          <dd id="out-labor">$0.00</dd>
+          <dt>Consumables</dt>
+          <dd id="out-consumables">$0.00</dd>
+          <dt>Other costs</dt>
+          <dd id="out-other">$0.00</dd>
+          <dt>Subtotal</dt>
+          <dd id="out-subtotal">$0.00</dd>
+          <dt>Tax</dt>
+          <dd id="out-tax">$0.00</dd>
+        </dl>
+        <dl style="margin-top:6px;">
+          <dt class="grand">Quote total</dt>
+          <dd class="grand" id="out-total">$0.00</dd>
+          <dt>Deposit due</dt>
+          <dd id="out-deposit">$0.00</dd>
+          <dt>Balance on completion</dt>
+          <dd id="out-balance">$0.00</dd>
+        </dl>
+        <p class="note">Generated with the free Steel Weight and Quote Calculator by Parlor City Digital. Confirm material pricing and tax treatment before issuing to a customer.</p>
+      </div>
+
+      <p style="margin-top:16px;" class="no-print">
+        <button type="button" class="btn btn-secondary" id="printBtn">Print Quote Summary</button>
+      </p>
+    </section>
+
+    <!-- ============ PAID PACK CTA ============ -->
+    <section class="cta" id="ctaSection" aria-labelledby="ctaHeading">
+      <h2 id="ctaHeading">Need the full paperwork, not just the number?</h2>
+      <p>The <strong>Fab Shop Quote and Job Pack</strong> is one ready-to-use workbook that carries a job from first call to final invoice - built for small fabrication shops that quote on paper, spreadsheets and memory.</p>
+      <ul>
+        <li>Quote sheet</li>
+        <li>Invoice</li>
+        <li>Job traveler</li>
+        <li>Cut list</li>
+        <li>QA/QC sheet</li>
+        <li>Bill of materials (BOM)</li>
+        <li>Material calculator</li>
+      </ul>
+      <p><span class="price">$39</span> <span>- one time, yours to keep and reuse on every job.</span></p>
+      <!-- Replace the href below with the Payhip product link on approval before publishing. -->
+      <p><a class="btn" href="#" id="getPackBtn">Get the Pack</a></p>
+      <p style="font-size:13px;margin-bottom:0;">Instant download. Works in Excel and Google Sheets.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <strong>Parlor City Digital</strong><br>
+  Practical tools and templates for small shops.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var DENSITY = 0.2833; // lb per cubic inch, carbon steel
+
+  function num(id){
+    var v = parseFloat(document.getElementById(id).value);
+    return isNaN(v) || v < 0 ? 0 : v;
+  }
+  function money(v){
+    return "$" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  function dim(id){
+    var v = num(id);
+    if(document.getElementById("unit").value === "mm"){ v = v / 25.4; }
+    return v;
+  }
+
+  function volumeIn3(shape){
+    var v = 0;
+    if(shape === "plate"){
+      v = dim("plate-t") * dim("plate-w") * dim("plate-l");
+    } else if(shape === "flat"){
+      v = dim("flat-t") * dim("flat-w") * dim("flat-l");
+    } else if(shape === "round"){
+      var d = dim("round-d");
+      v = Math.PI * d * d / 4 * dim("round-l");
+    } else if(shape === "square"){
+      var s = dim("square-s");
+      v = s * s * dim("square-l");
+    } else if(shape === "tube"){
+      var od = dim("tube-od"), wall = dim("tube-wall");
+      var id = od - 2 * wall;
+      if(id < 0){ id = 0; }
+      v = Math.PI / 4 * (od * od - id * id) * dim("tube-l");
+    } else if(shape === "angle"){
+      var t = dim("angle-t");
+      v = t * (dim("angle-a") + dim("angle-b") - t) * dim("angle-l");
+      if(v < 0){ v = 0; }
+    }
+    return v;
+  }
+
+  var weightTotalValue = 0;
+
+  function calcWeight(){
+    var shape = document.getElementById("shape").value;
+    var groups = document.querySelectorAll(".shape-fields");
+    for(var i = 0; i < groups.length; i++){
+      groups[i].classList.toggle("active", groups[i].id === "fields-" + shape);
+    }
+    var labels = document.querySelectorAll(".unit-label");
+    var u = document.getElementById("unit").value === "mm" ? "mm" : "in";
+    for(var j = 0; j < labels.length; j++){ labels[j].textContent = u; }
+
+    var perPiece = volumeIn3(shape) * DENSITY;
+    var qty = num("qty");
+    weightTotalValue = perPiece * qty;
+    document.getElementById("weightPerPiece").textContent = perPiece.toFixed(2) + " lb";
+    document.getElementById("weightTotal").textContent = weightTotalValue.toFixed(2) + " lb";
+
+    // Auto-fill the quote weight (still editable in the quote section)
+    document.getElementById("q-weight").value = weightTotalValue.toFixed(2);
+    calcQuote();
+  }
+
+  function calcQuote(){
+    var weight = num("q-weight");
+    var costLb = num("q-costlb");
+    var markup = num("q-markup");
+    var hours = num("q-hours");
+    var rate = num("q-rate");
+    var consumables = num("q-consumables");
+    var other = num("q-other");
+    var taxPct = num("q-tax");
+    var depositPct = num("q-deposit");
+
+    var matCost = weight * costLb;
+    var material = matCost * (1 + markup / 100);
+    var labor = hours * rate;
+    var subtotal = material + labor + consumables + other;
+    var tax = subtotal * taxPct / 100;
+    var total = subtotal + tax;
+    var deposit = total * depositPct / 100;
+    var balance = total - deposit;
+
+    document.getElementById("out-weight").textContent = weight.toFixed(2) + " lb";
+    document.getElementById("out-matcost").textContent = money(matCost);
+    document.getElementById("out-material").textContent = money(material);
+    document.getElementById("out-labor").textContent = money(labor);
+    document.getElementById("out-consumables").textContent = money(consumables);
+    document.getElementById("out-other").textContent = money(other);
+    document.getElementById("out-subtotal").textContent = money(subtotal);
+    document.getElementById("out-tax").textContent = money(tax);
+    document.getElementById("out-total").textContent = money(total);
+    document.getElementById("out-deposit").textContent = money(deposit);
+    document.getElementById("out-balance").textContent = money(balance);
+  }
+
+  var inputs = document.querySelectorAll("input, select");
+  for(var k = 0; k < inputs.length; k++){
+    inputs[k].addEventListener("input", function(e){
+      if(e.target.id === "q-weight" || e.target.id.indexOf("q-") === 0){
+        calcQuote();
+      } else {
+        calcWeight();
+      }
+    });
+    inputs[k].addEventListener("change", function(e){
+      if(e.target.id === "q-weight" || e.target.id.indexOf("q-") === 0){
+        calcQuote();
+      } else {
+        calcWeight();
+      }
+    });
+  }
+
+  document.getElementById("printBtn").addEventListener("click", function(){
+    window.print();
+  });
+
+  calcWeight();
+})();
+</script>
+</body>
+</html>
