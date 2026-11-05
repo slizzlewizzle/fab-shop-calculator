@@ -1,2 +1,3 @@
-# fab-shop-calculator
-Free steel weight and quote calculator for small fabrication shops. By Parlor City Digital.
+# Fab Shop Calculator
+Free steel weight and quote calculator for small fabrication, welding, and machine shops.
+Live page: https://slizzlewizzle.github.io/fab-shop-calculator/
